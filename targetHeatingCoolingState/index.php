@@ -2,8 +2,8 @@
 	//include('class/quivivoAPI.php');
 	require('../class/qivivoAPIv2.php');
 	
-	$qivivo_user=***********;
-	$qivivo_pass=***********;
+	$qivivo_user='******';
+	$qivivo_pass='******';
 
 	$target=$_GET["value"];
 	
@@ -11,23 +11,19 @@
 	$url = '../status/config.json';
 	$jsonString = file_get_contents($url);
 	$data = json_decode($jsonString, true);
-	
+	$state=$data[targetHeatingCoolingState];
 
-
-	
-
-	
 	$_qivivo = new qivivoAPI($qivivo_user, $qivivo_pass);
 	if (isset($_qivivo->error)) echo $_qivivo->error;
 	
-	//set thermostat temperature (Second argument is duration in minutes, can be omitted default 120. Last argument not necessary if one thermostat only):
-
 	switch($target){
 		case 0:
 			// OFF
-			$data[targetHeatingCoolingState]=$target;		
-			$_qivivo->cancelZoneOrder();
+			$data[targetHeatingCoolingState]=$target;
+			if($state==1)
+				$_qivivo->cancelZoneOrder();
 			$_qivivo->setAway();
+		break;
 		case 1:
 			// TEMPO
 			$data[targetHeatingCoolingState]=$target;
@@ -46,11 +42,17 @@
 			{
 				$consigne=$settings['result']['custom_temperatures'][$consigne];
 			}
-			$_qivivo->setTemperature($target,120);
+			echo $consigne;
+			$_qivivo->setTemperature($consigne,120);
+		break;
 		case 3:
 			// AUTO
 			$data[targetHeatingCoolingState]=$target;
-			$_qivivo->cancelZoneOrder();
+			if($state==1)
+				$_qivivo->cancelZoneOrder();
+			if($state==0)
+				$_qivivo->cancelAway();
+		break;
 	}
 	echo $target;
 	

@@ -8,8 +8,8 @@
 	$jsonString = file_get_contents($url);
 	$data = json_decode($jsonString, true);
 	
-	$qivivo_user=***********;
-	$qivivo_pass=***********;
+	$qivivo_user='******';
+	$qivivo_pass='******';
 	
 	
 	$_qivivo = new qivivoAPI($qivivo_user, $qivivo_pass);
@@ -51,7 +51,6 @@
 	//status
 	$heating = $_qivivo->getHeating();
 	$status=$heating['result']['zones'][0]['heating_status'];
-	//echo $status;
 	switch ($status)
 	{
 		case "cooling":
@@ -65,15 +64,12 @@
 	//humidité
 	$heating = $_qivivo->getHeating();
 	$hum=$heating['result']['zones'][0][humidity];
-	//print_r($hum);
-	
 
 	$data[currentRelativeHumidity]=$hum;
 	$data[currentTemperature]=$temp;
 	$data[currentHeatingCoolingState]=$status;
 	$data[targetTemperature]=$consigne;
 	
-	//print_r($data);
 	$newJsonString = json_encode($data);
 	file_put_contents($url, $newJsonString);
 	
